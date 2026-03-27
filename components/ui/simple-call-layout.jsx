@@ -77,9 +77,7 @@ const SimpleCallLayout = ({
             <div className="px-3 py-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full" />
-                <span className="text-white font-medium text-sm">
-                  Room: {roomId?.slice(0, 8)}...
-                </span>
+                
                 <div className="flex items-center space-x-1 text-gray-200">
                   <Users size={14} />
                   <span className="text-xs">{participants.length}</span>

@@ -20,7 +20,7 @@ const PermissionRequest = ({ error, permissions, onRetry, className = "" }) => {
       return {
         title: "Microphone Access Required",
         message:
-          "Please allow access to your microphone to join the voice room.",
+          "Allow access to your microphone to join the voice room.",
         type: "permission",
       };
     }
@@ -79,7 +79,7 @@ const PermissionRequest = ({ error, permissions, onRetry, className = "" }) => {
         {/* message */}
         <p className="text-gray-200 text-sm leading-relaxed mb-6">
           {errorInfo?.message ||
-            "Please allow access to your microphone to join the voice room."}
+            "Allow access to your microphone to join the voice room."}
         </p>
 
         {/* permission status (MIC ONLY) */}
@@ -100,15 +100,6 @@ const PermissionRequest = ({ error, permissions, onRetry, className = "" }) => {
 
         {/* button */}
         <div className="space-y-3">
-          <button
-            onClick={handleRetry}
-            disabled={isRetrying}
-            className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 border border-blue-400/30 rounded-2xl hover:from-blue-500/30 hover:to-purple-500/30 hover:border-blue-400/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 backdrop-blur-sm shadow-lg transform hover:scale-105"
-          >
-            <RefreshCw size={18} className={isRetrying ? "animate-spin" : ""} />
-            <span>{isRetrying ? "Requesting..." : "Try Again"}</span>
-          </button>
-
           {errorInfo?.type === "permission" && (
             <button
               onClick={() => {

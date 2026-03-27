@@ -1,7 +1,7 @@
+import { useState, useEffect, useRef } from "react";
 import { useSocket } from "@/store/socket";
 import { useParams } from "next/navigation";
-
-const { useState, useEffect, useRef } = require("react");
+import Peer from "peerjs";
 
 const usePeer = () => {
   const socket = useSocket();
@@ -9,76 +9,52 @@ const usePeer = () => {
 
   const [peer, setPeer] = useState(null);
   const [myId, setMyId] = useState("");
-
   const isPeerSet = useRef(false);
 
   useEffect(() => {
-    if (isPeerSet.current || !roomId || !socket) return;
+    if (isPeerSet.current || !socket || !roomId) return;
     isPeerSet.current = true;
 
-    let myPeer;
+    const uniqueId = `peer-${Math.floor(Math.random() * 100000)}`;
+    const myPeer = new Peer(uniqueId, {
+      config: {
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          { urls: "stun:stun1.l.google.com:19302" },
+          { urls: "stun:stun2.l.google.com:19302" },
+        ],
+        sdpSemantics: "unified-plan",
+      },
+      debug: process.env.NODE_ENV === "development" ? 2 : 0,
+    });
 
-    const initPeer = async () => {
-      try {
-        console.log("Initializing PeerJS...");
+    setPeer(myPeer);
 
-        const Peer = (await import("peerjs")).default;
+    myPeer.on("open", (id) => {
+      console.log("Peer open with ID:", id);
+      setMyId(id);
+      socket.emit("join-room", roomId, id);
+    });
 
-        myPeer = new Peer({
-          config: {
-            iceServers: [
-              { urls: "stun:stun.l.google.com:19302" },
-              { urls: "stun:stun1.l.google.com:19302" },
-              { urls: "stun:stun2.l.google.com:19302" },
-              { urls: "stun:stun3.l.google.com:19302" },
-              { urls: "stun:stun4.l.google.com:19302" },
-              { urls: "stun:stun.ekiga.net" },
-              { urls: "stun:stun.ideasip.com" },
-            ],
-            sdpSemantics: "unified-plan",
-            iceCandidatePoolSize: 10,
-          },
-          debug: process.env.NODE_ENV === "development" ? 2 : 0,
-        });
+    myPeer.on("error", (err) => console.error("PeerJS error:", err));
 
-        setPeer(myPeer);
-
-        myPeer.on("open", (id) => {
-          console.log("Peer connected:", id);
-          setMyId(id);
-
-          socket.emit("join-room", roomId, id);
-        });
-
-        myPeer.on("error", (error) => {
-          console.error("PeerJS error:", error);
-        });
-
-        myPeer.on("disconnected", () => {
-          console.log("Peer disconnected, reconnecting...");
-          if (!myPeer.destroyed) {
-            myPeer.reconnect();
-          }
-        });
-      } catch (error) {
-        console.error("Failed to initialize PeerJS:", error);
-        isPeerSet.current = false;
+    let retryCount = 0;
+    myPeer.on("disconnected", () => {
+      if (retryCount < 3 && !myPeer.destroyed) {
+        console.log("Retry Peer reconnect...");
+        setTimeout(() => {
+          myPeer.reconnect();
+          retryCount++;
+        }, 1000);
       }
-    };
-
-    initPeer();
+    });
 
     return () => {
-      if (myPeer && !myPeer.destroyed) {
-        myPeer.destroy();
-      }
+      if (!myPeer.destroyed) myPeer.destroy();
     };
-  }, [roomId, socket]);
+  }, [socket, roomId]);
 
-  return {
-    peer,
-    myId,
-  };
+  return { peer, myId };
 };
 
 export default usePeer;
