@@ -1,0 +1,36 @@
+{
+  "name": "WalknTalk",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack",
+    "dev:https": "next dev --webpack -H 0.0.0.0 -p 3000 --experimental-https --experimental-https-key ./192.168.1.10-key.pem --experimental-https-cert ./192.168.1.10.pem",
+    "build": "next build --webpack",
+    "start": "next start "
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "classnames": "^2.3.2",
+    "clsx": "^2.1.1",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.447.0",
+    "peerjs": "^1.5.1",
+    "react": "^18.3.1",
+    "react-copy-to-clipboard": "^5.1.0",
+    "react-dom": "^18.3.1",
+    "react-player": "^2.13.0",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss-animate": "^1.0.7",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "dev-https": "^1.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "^15.5.4",
+    "next": "^16.2.1",
+    "postcss": "^8.5.6",
+    "shadcn": "^3.3.1",
+    "tailwindcss": "^3.4.0"
+  }
+}
